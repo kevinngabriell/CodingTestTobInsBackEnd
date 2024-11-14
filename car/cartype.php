@@ -82,6 +82,45 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
             http_response_code(500);
             echo json_encode(["StatusCode" => 500, "Status" => "Error", "Message" => "Failed to prepare SQL statement"]);
         }
+    } else if (isset($_GET['brand'])){
+        // Get list of car based on the brand UID
+        $brand = $_GET['brand'];
+        $query = "SELECT 
+            CT.uid, 
+            CT.name, 
+            CB.name AS brand, 
+            CT.created_at, 
+            CU.name AS created_by, 
+            CT.updated_at, 
+            UU.name AS updated_by
+        FROM 
+            CarType CT
+        LEFT JOIN 
+            CarBrand CB ON CT.brand = CB.uid
+        LEFT JOIN 
+            users CU ON CT.created_by = CU.account_uid
+        LEFT JOIN 
+            users UU ON CT.updated_by = UU.account_uid
+        WHERE CT.brand = ?";
+        $stmt = mysqli_prepare($connect, $query);
+
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "s", $brand);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $carType = mysqli_fetch_assoc($result);
+
+            if ($carType) {
+                http_response_code(200);
+                echo json_encode(["StatusCode" => 200, "Status" => "Success", "Data" => $carType]);
+            } else {
+                http_response_code(404);
+                echo json_encode(["StatusCode" => 404, "Status" => "Not Found", "Message" => "Car type not found"]);
+            }
+        } else {
+            http_response_code(500);
+            echo json_encode(["StatusCode" => 500, "Status" => "Error", "Message" => "Failed to prepare SQL statement"]);
+        }
     } else {
         // Get all car types
        $query = "SELECT 
