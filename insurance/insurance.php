@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_GET['policy_number'])) {
         // Retrieve the details of a single policy
         $policy_number = $_GET['policy_number'];
-        $query = "SELECT I.policy_number, UI.name as insured, I.effective_date, I.expiration_date, CONCAT(CB.name, ' - ', CT.name) AS car_name, I.car_price, I.car_year, I.premium_price, RI.rate as premium_rate 
+        $query = "SELECT I.policy_number, UI.name as insured, I.effective_date, I.expiration_date, CONCAT(CB.name, ' - ', CT.name) AS car_name, I.car_price, I.car_year, I.premium_price, RI.rate as premium_rate, I.car_brand as car_brand_uid,  I.car_type as car_type_uid, I.premium_rate as premium_rate_uid
                   FROM Insurance I
                   LEFT JOIN CarBrand CB ON I.car_brand = CB.uid
                   LEFT JOIN CarType CT ON I.car_type = CT.uid
